@@ -56,6 +56,15 @@ You should see messages indicating successful message sending and receiving.
 - ✅ Part 1: Chunking implemented for large UDP messages
 - ⏳ Part 2+: To be implemented (reordering, ACKs, retransmission...)
 
+### ⚙️ VS Code Interpreter (Optional)
+
+If you're using VS Code, you can create a `.vscode/settings.json` with the Python interpreter path of your Conda environment:
+
+```json
+{
+  "python.defaultInterpreterPath": "/path/to/your/env/bin/python"
+}
+
 ## 📦 Dependencies
 
 All required packages are in `environment.yml`. No external libraries beyond Python standard library are required.
