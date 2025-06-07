@@ -21,6 +21,19 @@ Project 2/
 
 ### ✅ Environment Setup
 
+If you're using VS Code, you can configure the Python interpreter for this project
+by creating a `.vscode/settings.json` file like this:
+
+```json
+{
+  "python.defaultInterpreterPath": "/path/to/your/env/bin/python"
+}
+```
+
+This ensures that VS Code uses the correct Conda environment for linting, debugging, and running the code.
+
+
+
 Use Conda to create the environment:
 
 ```bash
@@ -55,15 +68,6 @@ You should see messages indicating successful message sending and receiving.
 - ✅ Part 0: Initial setup and raw send/receive tested
 - ✅ Part 1: Chunking implemented for large UDP messages
 - ⏳ Part 2+: To be implemented (reordering, ACKs, retransmission...)
-
-## ⚙️ VS Code Interpreter (Optional)
-
-If you're using VS Code, you can create a `.vscode/settings.json` with the Python interpreter path of your Conda environment:
-
-```json
-{
-  "python.defaultInterpreterPath": "/path/to/your/env/bin/python"
-}
 
 ## 📦 Dependencies
 
