@@ -14,12 +14,14 @@ class Streamer:
         self.dst_ip = dst_ip
         self.dst_port = dst_port
 
-    def send(self, data_bytes: bytes) -> None:
-        """Note that data_bytes can be larger than one packet."""
-        # Your code goes here!  The code below should be changed!
+def send(self, data_bytes: bytes) -> None:
+    """Send large data by breaking it into smaller UDP-safe chunks."""
+    MAX_UDP_SIZE = 1472  # UDP packet max payload size
 
-        # for now I'm just sending the raw application-level data in one UDP payload
-        self.socket.sendto(data_bytes, (self.dst_ip, self.dst_port))
+    for i in range(0, len(data_bytes), MAX_UDP_SIZE):
+        chunk = data_bytes[i:i + MAX_UDP_SIZE]
+        self.socket.sendto(chunk, (self.dst_ip, self.dst_port))
+
 
     def recv(self) -> bytes:
         """Blocks (waits) if no data is ready to be read from the connection."""
