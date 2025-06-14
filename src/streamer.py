@@ -43,7 +43,10 @@ class Streamer:
             (seq,) = struct.unpack(self.HEADER_FORMAT, data[: self.HEADER_SIZE])
             payload = data[self.HEADER_SIZE :]
 
-            if seq not in self.recv_buffer:
+            if seq == self.expected_seq:
+                self.expected_seq += 1
+                return payload
+            elif seq > self.expected_seq and seq not in self.recv_buffer:
                 self.recv_buffer[seq] = payload
 
     def close(self) -> None:
