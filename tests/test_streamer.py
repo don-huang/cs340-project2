@@ -1,5 +1,6 @@
 import sys
 import os
+import time
 
 # 添加 src 路径到 sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../src")))
@@ -98,6 +99,7 @@ def main():
     if sys.argv[3] == "1":
         host1(port1, port2)
     elif sys.argv[3] == "2":
+        time.sleep(1)  # ✅ 给 Stage 1 一点时间先完成初始化绑定
         host2(port2, port1)
     else:
         print("Unexpected last argument: " + sys.argv[2])
