@@ -4,35 +4,47 @@ from lossy_socket import LossyUDP
 # do not import anything else from socket except INADDR_ANY
 from socket import INADDR_ANY
 
+import struct
+
 
 class Streamer:
+    HEADER_FORMAT = "!I"  # 4-byte unsigned int (sequence number)
+    HEADER_SIZE = struct.calcsize(HEADER_FORMAT)
+    MAX_PAYLOAD_SIZE = 1472 - HEADER_SIZE
+
     def __init__(self, dst_ip, dst_port, src_ip=INADDR_ANY, src_port=0):
-        """Default values listen on all network interfaces, chooses a random source port,
-        and does not introduce any simulated packet loss."""
         self.socket = LossyUDP()
         self.socket.bind((src_ip, src_port))
         self.dst_ip = dst_ip
         self.dst_port = dst_port
 
-    def send(self, data_bytes: bytes) -> None:
-        """Send large data by breaking it into smaller UDP-safe chunks."""
-        MAX_UDP_SIZE = 1472  # UDP packet max payload size
+        self.send_seq = 0
+        self.expected_seq = 0
+        self.recv_buffer = {}  # buffer for out-of-order packets
 
-        for i in range(0, len(data_bytes), MAX_UDP_SIZE):
-            chunk = data_bytes[i : i + MAX_UDP_SIZE]
-            self.socket.sendto(chunk, (self.dst_ip, self.dst_port))
+    def send(self, data_bytes: bytes) -> None:
+        for i in range(0, len(data_bytes), self.MAX_PAYLOAD_SIZE):
+            chunk = data_bytes[i : i + self.MAX_PAYLOAD_SIZE]
+            header = struct.pack(self.HEADER_FORMAT, self.send_seq)
+            self.socket.sendto(header + chunk, (self.dst_ip, self.dst_port))
+            self.send_seq += 1
 
     def recv(self) -> bytes:
-        """Blocks (waits) if no data is ready to be read from the connection."""
-        # your code goes here!  The code below should be changed!
+        while True:
+            if self.expected_seq in self.recv_buffer:
+                data = self.recv_buffer.pop(self.expected_seq)
+                self.expected_seq += 1
+                return data
 
-        # this sample code just calls the recvfrom method on the LossySocket
-        data, addr = self.socket.recvfrom()
-        # For now, I'll just pass the full UDP payload to the app
-        return data
+            data, addr = self.socket.recvfrom()
+            if len(data) < self.HEADER_SIZE:
+                continue  # drop malformed packet
+
+            (seq,) = struct.unpack(self.HEADER_FORMAT, data[: self.HEADER_SIZE])
+            payload = data[self.HEADER_SIZE :]
+
+            if seq not in self.recv_buffer:
+                self.recv_buffer[seq] = payload
 
     def close(self) -> None:
-        """Cleans up. It should block (wait) until the Streamer is done with all
-        the necessary ACKs and retransmissions"""
-        # your code goes here, especially after you add ACKs and retransmissions.
         pass
