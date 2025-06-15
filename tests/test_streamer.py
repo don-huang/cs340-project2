@@ -1,5 +1,6 @@
 import sys
 import os
+import time
 
 # 添加 src 路径到 sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../src")))
@@ -73,6 +74,7 @@ def host2(listen_port, remote_port):
         buf = "%d " % i
         print("sending {%s}" % buf)
         s.send(buf.encode("utf-8"))
+    time.sleep(1)
     receive(s)
     s.close()
     print("STAGE 2 TEST PASSED!")
